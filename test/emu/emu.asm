@@ -275,6 +275,58 @@ lda $f8,x
 stp
 origin $dc0
 base $dc0
+incx:
+ldx #$ff
+inx
+stp
+origin $e00
+base $e00
+dexneg:
+ldx #$00
+dex
+stp
+origin $e40
+base $e40
+incy:
+ldy #$7f
+iny
+stp
+origin $e80
+base $e80
+deca:
+lda #$01
+dec
+stp
+origin $ec0
+base $ec0
+incdp:
+inc $20
+stp
+origin $f00
+base $f00
+decabs:
+dec $0234
+stp
+origin $f40
+base $f40
+incxloop:
+ldx #$00
+ldy #$00
+inx
+bne incxloop_t
+ldy #$01
+incxloop_t:
+nop
+stp
+origin $f80
+base $f80
+jmpidx4:
+ldx #$04
+jmp ($0280,x)
+lda #$01
+stp
+origin $fc0
+base $fc0
 jmpidx_t:
 lda #$00
 stp

@@ -45,3 +45,14 @@ jmpidx    | 0 | ldx #$02 ; jmp ($0280,x) ; lda #$01           | A=ff mem16:0282=
 strdp     | 0 | str $41=$40                                   | mem:0040=77        | mem:0041=77
 adcxy     | 0 | clc ; ldx #$50 ; ldy #$51 ; adc (x)=(y)       | mem:0050=10 mem:0051=20 | mem:0050=30 ZF=0
 dpxwrap   | 0 | ldx #$10 ; lda $f8,x                          | mem:0008=3c mem:0108=99 | A=3c
+# qwertymodo/SPCdra issue #2: INC/DEC set N and Z (the original spec set no flags)
+incx      | 0 | ldx #$ff ; inx                                |                    | X=00 ZF=1 NF=0
+dexneg    | 0 | ldx #$00 ; dex                                |                    | X=ff ZF=0 NF=1
+incy      | 0 | ldy #$7f ; iny                                |                    | Y=80 NF=1 ZF=0
+deca      | 0 | lda #$01 ; dec                                |                    | A=00 ZF=1
+incdp     | 0 | inc $20                                       | mem:0020=ff        | mem:0020=00 ZF=1
+decabs    | 0 | dec $0234                                     | mem:0234=00        | mem:0234=ff NF=1
+incxloop  | 0 | ldx #$00 ; ldy #$00 ; inx ; bne @t ; ldy #$01 ; @t: nop |  | X=01 Y=00
+# qwertymodo/SPCdra issue #1: JMP [!a+X] jumps through the table entry at a+X (the original spec
+# jumped to the word at a plus X)
+jmpidx4   | 0 | ldx #$04 ; jmp ($0280,x) ; lda #$01           | mem:0280=0000 mem16:0284=@jmpidx_t A=ff | A=00

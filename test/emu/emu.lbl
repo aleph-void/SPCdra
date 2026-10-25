@@ -37,4 +37,12 @@ jmpidx 0cc0
 strdp 0d00
 adcxy 0d40
 dpxwrap 0d80
-jmpidx_t 0dc0
+incx 0dc0
+dexneg 0e00
+incy 0e40
+deca 0e80
+incdp 0ec0
+decabs 0f00
+incxloop 0f40
+jmpidx4 0f80
+jmpidx_t 0fc0

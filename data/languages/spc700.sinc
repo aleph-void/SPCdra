@@ -59,8 +59,6 @@ UPAGE: imm8 is imm8 & UPA { export UPA; }
 # Relative branch target (16-bit wrap).
 RADDR8: addr is simm8 [ addr = (inst_next + simm8) & 0xffff; ] { export *:1 addr; }
 
-define pcodeop sleep;
-define pcodeop stop;
 
 ################################################################
 # Macros. Macro locals share the caller's namespace, so they use macro-specific names.

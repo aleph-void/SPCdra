@@ -1774,7 +1774,7 @@ MEMBIT: mb_addr^":"^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # EF
 :WAI is op=0xEF & DPB {
-	sleep();
+	goto inst_start;
 }
 
 # F0
@@ -1880,7 +1880,6 @@ MEMBIT: mb_addr^":"^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # FF
 :STP is op=0xFF & DPB {
-	stop();
 	goto inst_start;
 }
 

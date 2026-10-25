@@ -60,7 +60,11 @@ public class SpcSingleStep extends GhidraScript {
 				emu.getEmulator().executeInstruction(true, monitor);
 				StringBuilder d = new StringBuilder();
 				long gpc = emu.readRegister(lang.getProgramCounter()).longValue();
-				if (gpc != fin.get("pc").getAsLong()) {
+				// SLEEP/STOP halt: the model stays on the instruction (a self-loop); the test files
+				// take their final state after the opcode fetch (PC+1). Accept the halted PC there.
+				boolean halted = (key.equals("ef") || key.equals("ff")) &&
+					gpc == in.get("pc").getAsLong();
+				if (gpc != fin.get("pc").getAsLong() && !halted) {
 					d.append(String.format(" PC %04x!=%04x", gpc, fin.get("pc").getAsLong()));
 				}
 				for (String r : new String[] { "a", "x", "y" }) {

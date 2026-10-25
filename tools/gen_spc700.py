@@ -390,7 +390,10 @@ def body(code):
     simple = {"NOP": [], "CLRP": ["PF = 0;"], "SETP": ["PF = 1;"], "CLRC": ["CF = 0;"],
               "SETC": ["CF = 1;"], "EI": ["IF = 1;"], "DI": ["IF = 0;"],
               "CLRV": ["VF = 0;", "HF = 0;"], "NOTC": ["CF = CF ^ 1;"],
-              "SLEEP": ["sleep();"], "STOP": ["stop();", "goto inst_start;"]}
+              # SLEEP and STOP halt the CPU (the SNES gives the SPC700 no interrupt to wake it):
+              # a self-loop, so nothing falls through and an emulator stays on the instruction
+              # instead of failing on an unimplemented pcodeop.
+              "SLEEP": ["goto inst_start;"], "STOP": ["goto inst_start;"]}
     return simple[mn]
 
 

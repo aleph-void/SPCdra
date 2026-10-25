@@ -110,7 +110,7 @@ MEMBIT: mb_addr^":"^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 }
 
 # 0D
-:PHP is op=0x0D & DPB {
+:PHP is op=0x0D & DPB [ ctx_svOK=1; globalset(inst_next, ctx_svOK); ctx_svP=ctx_P; globalset(inst_next, ctx_svP); ] {
 	local p:1; packpsw(p);
 	push8(p);
 }
@@ -1087,6 +1087,10 @@ MEMBIT: mb_addr^":"^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # 8E
 :PLP is op=0x8E & DPB {
+	local p:1; pop8(p);
+	unpackpsw(p);
+}
+:PLP is op=0x8E & DPB & ctx_svOK=1 [ ctx_P=ctx_svP; globalset(inst_next, ctx_P); ctx_svOK=0; globalset(inst_next, ctx_svOK); ] {
 	local p:1; pop8(p);
 	unpackpsw(p);
 }

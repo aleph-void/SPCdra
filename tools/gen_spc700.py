@@ -403,6 +403,9 @@ def actions(code):
         return "[ ctx_P=1; globalset(inst_next, ctx_P); ]"
     if mn == "CLRP":
         return "[ ctx_P=0; globalset(inst_next, ctx_P); ]"
+    if mn == "PUSH" and modes == ["PSW"]:
+        return ("[ ctx_svOK=1; globalset(inst_next, ctx_svOK); "
+                "ctx_svP=ctx_P; globalset(inst_next, ctx_svP); ]")
     return ""
 
 
@@ -423,6 +426,14 @@ def constructor(code, display):
     for l in body(code):
         lines.append("\t" + l)
     lines.append("}")
+    if mn == "POP" and modes == ["PSW"]:
+        # after a PUSH PSW on this flow path the pulled P is known: restore the decode context
+        lines.append(head.replace("& DPB", "& DPB & ctx_svOK=1") +
+                     " [ ctx_P=ctx_svP; globalset(inst_next, ctx_P); "
+                     "ctx_svOK=0; globalset(inst_next, ctx_svOK); ] {")
+        for l in body(code):
+            lines.append("\t" + l)
+        lines.append("}")
     return "\n".join(lines)
 
 

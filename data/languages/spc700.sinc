@@ -17,6 +17,10 @@ define context contextreg
     # Direct-page select (PSW.P) for decoding: SETP/CLRP set it for the code that follows, so
     # direct-page operands get constant addresses ($00xx or $01xx).
     ctx_P=(0,0)
+    # PSW.P saved by the last PUSH PSW on this flow path (ctx_svOK=1): POP PSW restores ctx_P
+    # from it. Flow context follows branches and calls, so this models one PUSH/POP level.
+    ctx_svOK=(1,1)
+    ctx_svP=(2,2)
 ;
 
 define token opcode (8)

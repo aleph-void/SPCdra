@@ -4,4 +4,8 @@
 
 <processor_spec>
   <programcounter register="PC"/>
+  <volatile outputop="write" inputop="read">
+    <!-- I/O registers $F0-$FF (test, control, DSP address/data, ports, timers, counters) -->
+    <range space="ram" first="0xf0" last="0xff"/>
+  </volatile>
 </processor_spec>

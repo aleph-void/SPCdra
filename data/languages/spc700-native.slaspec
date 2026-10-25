@@ -11,7 +11,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # 01
 :TCALL tcalln is op=0x01 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -125,7 +125,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # 0F
 :BRK is op=0x0F & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local p:1; packpsw(p); push8(p);
 	BF = 1;
 	IF = 0;
@@ -140,7 +140,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # 11
 :TCALL tcalln is op=0x11 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -265,7 +265,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # 21
 :TCALL tcalln is op=0x21 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -388,7 +388,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # 31
 :TCALL tcalln is op=0x31 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -501,7 +501,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # 3F
 :CALL "!"^ADDR16J is op=0x3F & DPB; ADDR16J {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 3; push16(ret);
 	call ADDR16J;
 }
 
@@ -512,7 +512,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # 41
 :TCALL tcalln is op=0x41 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -625,7 +625,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # 4F
 :PCALL UPAGE is op=0x4F & DPB; UPAGE {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 2; push16(ret);
 	call UPAGE;
 }
 
@@ -636,7 +636,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # 51
 :TCALL tcalln is op=0x51 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -757,7 +757,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # 61
 :TCALL tcalln is op=0x61 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -869,7 +869,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # 71
 :TCALL tcalln is op=0x71 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -980,7 +980,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # 81
 :TCALL tcalln is op=0x81 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -1109,7 +1109,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # 91
 :TCALL tcalln is op=0x91 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -1230,7 +1230,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # A1
 :TCALL tcalln is op=0xA1 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -1354,7 +1354,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # B1
 :TCALL tcalln is op=0xB1 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -1476,7 +1476,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # C1
 :TCALL tcalln is op=0xC1 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -1580,7 +1580,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # D1
 :TCALL tcalln is op=0xD1 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -1686,7 +1686,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # E1
 :TCALL tcalln is op=0xE1 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];
@@ -1788,7 +1788,7 @@ MEMBIT: mb_addr^"."^membitno is mb_addr & membitno { export *[const]:2 mb_addr; 
 
 # F1
 :TCALL tcalln is op=0xF1 & tcalln & DPB {
-	local ret:2 = inst_next; push16(ret);
+	local ret:2 = inst_start + 1; push16(ret);
 	local vec:2 = 0xffde - 2 * tcalln;
 	local t:2 = *:2 vec;
 	call [t];

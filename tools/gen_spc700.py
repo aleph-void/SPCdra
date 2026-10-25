@@ -347,15 +347,17 @@ def body(code):
         if modes[0] == "abs":
             return ["goto ADDR16J;"]
         return ["local ptr:2 = ADDR16 + zext(X);", "local t:2 = *:2 ptr;", "goto [t];"]
+    # The return address is inst_start + length in 16-bit arithmetic rather than inst_next, so a
+    # 1-byte TCALL/BRK at $FFFF pushes $0000 (inst_next would be $10000, outside the space).
     if mn == "CALL":
-        return ["local ret:2 = inst_next; push16(ret);", "call ADDR16J;"]
+        return ["local ret:2 = inst_start + 3; push16(ret);", "call ADDR16J;"]
     if mn == "PCALL":
-        return ["local ret:2 = inst_next; push16(ret);", "call UPAGE;"]
+        return ["local ret:2 = inst_start + 2; push16(ret);", "call UPAGE;"]
     if mn == "TCALL":
-        return ["local ret:2 = inst_next; push16(ret);", "local vec:2 = 0xffde - 2 * tcalln;",
+        return ["local ret:2 = inst_start + 1; push16(ret);", "local vec:2 = 0xffde - 2 * tcalln;",
                 "local t:2 = *:2 vec;", "call [t];"]
     if mn == "BRK":
-        return ["local ret:2 = inst_next; push16(ret);", "local p:1; packpsw(p); push8(p);", "BF = 1;", "IF = 0;",
+        return ["local ret:2 = inst_start + 1; push16(ret);", "local p:1; packpsw(p); push8(p);", "BF = 1;", "IF = 0;",
                 "local t:2 = *:2 0xffde:2;", "call [t];"]
     if mn == "RET":
         return ["local t:2; pop16(t);", "return [t];"]

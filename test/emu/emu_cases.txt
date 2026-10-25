@@ -1,0 +1,47 @@
+# SPC700 p-code emulation cases. One case per line:
+#   name | P | code | init | expect
+# code: bass 65816-style syntax (data/languages/spc700.arch), statements separated by " ; ",
+#       "@x" is a label local to the case. make_emu.py places case i at $0400 + $40*i and
+#       appends "stp"; the emulator runs from the case start to that stp.
+# P: initial PSW.P decode context. init/expect: REG=hex (A X Y SP YA, flags CF ZF IF HF BF
+#   PF VF NF), mem:ADDR=bytes, mem16:ADDR=@label (little-endian label address).
+# Flags not listed start at 0; SP starts at $1EF.
+adc8      | 0 | clc ; lda #$7f ; adc #$01                     |                    | A=80 NF=1 VF=1 HF=1 CF=0 ZF=0
+adcc      | 0 | sec ; lda #$ff ; adc #$00                     |                    | A=00 CF=1 ZF=1 HF=1 VF=0
+sbc8      | 0 | sec ; lda #$10 ; sbc #$20                     |                    | A=f0 CF=0 NF=1 VF=0
+sbcbor    | 0 | clc ; lda #$50 ; sbc #$10                     |                    | A=3f CF=1 HF=0
+cmpimm    | 0 | lda #$40 ; cmp #$41                           |                    | CF=0 NF=1 ZF=0
+movw      | 0 | ldw $10                                       | mem:0010=3480      | YA=8034 NF=1 ZF=0
+addw      | 0 | ldw $10 ; adw $12                             | mem:0010=ff7f0100  | YA=8000 VF=1 NF=1 CF=0 HF=1
+subw      | 0 | ldw $10 ; sbw $12                             | mem:0010=00000100  | YA=ffff CF=0 NF=1
+cmpw      | 0 | ldw $10 ; cpw $12                             | mem:0010=34123412  | ZF=1 CF=1
+incw      | 0 | inw $10                                       | mem:0010=ffff      | mem:0010=0000 ZF=1
+mul       | 0 | lda #$12 ; ldy #$34 ; mul                     |                    | YA=03a8 NF=0 ZF=0
+div       | 0 | lda #$23 ; ldy #$01 ; ldx #$10 ; div          |                    | A=12 Y=03 VF=0
+divovf    | 0 | lda #$00 ; ldy #$20 ; ldx #$10 ; div          |                    | VF=1
+daa       | 0 | clc ; lda #$19 ; adc #$28 ; daa               |                    | A=47 CF=0
+das       | 0 | sec ; lda #$42 ; sbc #$15 ; das               |                    | A=27 CF=1
+call      | 0 | jsr @sub ; bra @end ; @sub: lda #$42 ; rts ; @end: nop |       | A=42 SP=01ef
+pcall     | 0 | jsp $80                                       | mem:ff80=e8556f    | A=55 SP=01ef
+tcall     | 0 | jst 0                                         | mem:ffde=80ff mem:ff80=e8666f | A=66 SP=01ef
+brkreti   | 0 | sec ; brk ; lda #$01                          | mem:ffde=80ff mem:ff80=607f | A=01 CF=1 SP=01ef
+dbnzy     | 0 | lda #$00 ; ldy #$05 ; @l: inc ; bne --y=@l    |                    | A=05 Y=00
+dbnzdp    | 0 | ldx #$00 ; @l: inx ; bne --$20=@l             | mem:0020=03        | X=03 mem:0020=00
+cbne      | 0 | lda #$07 ; ldy #$00 ; bne $30=@n ; ldy #$01 ; @n: nop | mem:0030=07 | Y=01
+bbs       | 0 | ldy #$00 ; bbs $30:5=@t ; ldy #$01 ; @t: nop  | mem:0030=20        | Y=00
+set1clr1  | 0 | set $31:7 ; clr $31:0                         | mem:0031=01        | mem:0031=80
+membit    | 0 | clc ; orc $0123:6 ; stc $0124:0 ; not $0125:1 | mem:0123=40 mem:0124=00 mem:0125=00 | CF=1 mem:0124=01 mem:0125=02
+membitn   | 0 | sec ; and !$0123:6                            | mem:0123=40        | CF=0
+tsb       | 0 | lda #$0f ; tsb $0200                          | mem:0200=f0        | mem:0200=ff NF=0 ZF=0
+trb       | 0 | lda #$0f ; trb $0200                          | mem:0200=ff        | mem:0200=f0
+pushpop   | 0 | lda #$12 ; pha ; lda #$00 ; pla               |                    | A=12 SP=01ef mem:01ef=12
+pushpsw   | 0 | sec ; php ; clc ; plp                         |                    | CF=1 SP=01ef
+xcn       | 0 | lda #$3c ; xcn                                |                    | A=c3 NF=1
+dppage1   | 0 | sep ; lda $12 ; clp ; ldx $12                 | mem:0012=11 mem:0112=22 | A=22 X=11
+staxinc   | 0 | ldx #$40 ; lda #$aa ; sta (x++) ; sta (x++)   |                    | X=42 mem:0040=aaaa
+ldaidx    | 0 | ldx #$02 ; lda ($10,x)                        | mem:0012=0003 mem:0300=5a | A=5a
+ldaidy    | 0 | ldy #$03 ; lda ($10),y                        | mem:0010=0003 mem:0303=6b | A=6b
+jmpidx    | 0 | ldx #$02 ; jmp ($0280,x) ; lda #$01           | A=ff mem16:0282=@jmpidx_t | A=00
+strdp     | 0 | str $41=$40                                   | mem:0040=77        | mem:0041=77
+adcxy     | 0 | clc ; ldx #$50 ; ldy #$51 ; adc (x)=(y)       | mem:0050=10 mem:0051=20 | mem:0050=30 ZF=0
+dpxwrap   | 0 | ldx #$10 ; lda $f8,x                          | mem:0008=3c mem:0108=99 | A=3c

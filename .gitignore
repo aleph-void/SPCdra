@@ -81,3 +81,8 @@ dist/
 
 # Don't commit the processor manual to the repository because it is copyrighted
 data/manuals/*.pdf
+*.sla
+build/
+dist/
+.gradle/
+lib/

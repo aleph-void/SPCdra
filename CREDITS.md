@@ -18,8 +18,8 @@ language; only the display text differs.
 
 ## What Ghidra-Rare changed
 
-Each change is a commit on branch `ghidra-rare` of a fork of qwertymodo/SPCdra; the module here
-is a copy of that branch's processor files plus the generator.
+Each change is a commit on branch `ghidra-rare` of the fork of qwertymodo/SPCdra (Ghidra-Rare
+includes the fork as a submodule).
 
 1. **Generated SLEIGH, fixed decoding and p-code** (`c1f1ac7`). `tools/gen_spc700.py` now
    writes both `.slaspec` files from one 256-entry opcode table, so they share identical p-code.
@@ -41,8 +41,21 @@ is a copy of that branch's processor files plus the generator.
    sign-extended. The entry is now decoded with the saved PSW's direct page, `$FC`/`$FF` are
    named TIMER2/COUNTER2, and only the native-syntax language is preferred.
 
-Ghidra-Rare-only files (not in the fork): `build.gradle`, `extension.properties`, `README.md`,
-`CREDITS.md`, `test/`. `tools/gen_spc700.py` is in both.
+3. **SLEEP/STOP** (`e308242`): halt as a self-loop instead of `sleep()`/`stop()` pcodeops, which
+   stopped Ghidra's emulator.
+4. **PSW.P through PUSH PSW ... POP PSW** (`4d14cac`): POP PSW restores the direct-page decode
+   context saved by the PUSH PSW on the same flow path.
+5. **Return address in 16 bits** (`e2c00b6`): CALL/PCALL/TCALL/BRK push `inst_start + length`,
+   so a TCALL/BRK at `$FFFF` returns to `$0000` instead of failing.
+6. **Tests for upstream issues #1 and #2** (`0b50b41`): JMP `[!a+X]` and INC/DEC flag cases (both
+   bugs were fixed by change 1).
+7. **SPC loader** (`cae8ae7`): the 128 S-DSP registers as the overlay block `DSP` with register
+   names; class documentation and entry-address validation (upstream TODOs).
+8. **README** (this commit series): the "very experimental" warning, install from the Releases
+   page, and why the entry point is still not found automatically.
+
+The Ghidra-Rare additions (`GHIDRA-RARE.md`, `CREDITS.md`, `test/`, `build.gradle`,
+`extension.properties`, the release workflow) are in the fork too (`4891483`, `baea358`).
 
 ## Test inputs and tools (not redistributed)
 

@@ -9,7 +9,8 @@
 # 3. decode corpora (64 KB each: every opcode x 16 operand patterns + 12,288 random words,
 #    seeds 1..ncorpora): native variant vs MAME (test/compare.py); with BASS, the 65816-style
 #    variant re-assembled by bass with the variant's own table (test/bass_roundtrip.py)
-# 4. every opcode decodes in both variants; p-code emulation cases (test/emu-test.sh) on both
+# 4. every opcode decodes in both variants; p-code emulation cases (test/emu-test.sh) and the
+#    PSW.P context test (test/ctx-test.sh) on both; the SPC loader test (test/loader-test.sh)
 # 5. SINGLESTEP=1: SingleStepTests/spc700, all 256,000 tests, both variants
 # 6. REAL_SAMPLES=<dir>: SNESMOD driver and MAME-dumped .spc files (test/real-binaries.sh)
 # Report: <workdir>/report.txt
@@ -59,10 +60,14 @@ for v in ("native", "s65816_"):
     print(f"every-opcode decode ({v.strip('_')}): {len(seen)}/256")
 PY
 
-echo "[4] emulation"
+echo "[4] emulation, PSW.P context, loader"
 for l in "${LANGS[@]}"; do
 	echo "$l $("$HERE/emu-test.sh" "$WORK/emu-$l.txt" "$l" | tail -1)" | tee -a "$WORK/report.txt"
 done
+for l in "${LANGS[@]}"; do
+	echo "$l $("$HERE/ctx-test.sh" "$l" "$WORK/ctx-$l" | tail -1)" | tee -a "$WORK/report.txt"
+done
+"$HERE/loader-test.sh" "$WORK/loader" | tail -1 | tee -a "$WORK/report.txt"
 
 if [[ -n ${SINGLESTEP:-} ]]; then
 	echo "[5] SingleStepTests"

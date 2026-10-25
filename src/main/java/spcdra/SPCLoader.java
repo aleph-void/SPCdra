@@ -58,7 +58,9 @@ public class SPCLoader extends AbstractLibrarySupportLoader {
 				return loadSpecs;
 			
 			loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("spc700:LE:16:default", "default"), true));
-			loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("spc700:LE:16:65816", "default"), true));
+			// The 65816-style variant is the same language with other mnemonics: offered, not
+			// preferred, so a headless import picks one language.
+			loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("spc700:LE:16:65816", "default"), false));
 		} catch(IllegalArgumentException e) {}
 		
 		return loadSpecs;
@@ -84,20 +86,31 @@ public class SPCLoader extends AbstractLibrarySupportLoader {
 			st.createLabel(as.getAddress(0xF7), "PORT3", SourceType.IMPORTED);
 			st.createLabel(as.getAddress(0xFA), "TIMER0", SourceType.IMPORTED);
 			st.createLabel(as.getAddress(0xFB), "TIMER1", SourceType.IMPORTED);
-			st.createLabel(as.getAddress(0xFC), "TIMER3", SourceType.IMPORTED);
+			st.createLabel(as.getAddress(0xFC), "TIMER2", SourceType.IMPORTED);
 			st.createLabel(as.getAddress(0xFD), "COUNTER0", SourceType.IMPORTED);
 			st.createLabel(as.getAddress(0xFE), "COUNTER1", SourceType.IMPORTED);
-			st.createLabel(as.getAddress(0xFF), "COUNTER3", SourceType.IMPORTED);
+			st.createLabel(as.getAddress(0xFF), "COUNTER2", SourceType.IMPORTED);
 			st.createLabel(as.getAddress(0xFFC0), "IPL", SourceType.IMPORTED);
 			
 			String op = OptionUtils.getOption(OPT_EP_ADDRESS, settings.options(), "0");
 			int ep = Integer.parseInt(op, 16);
-			st.addExternalEntryPoint(as.getAddress(ep));
+			var epAddr = as.getAddress(ep);
+			st.addExternalEntryPoint(epAddr);
+			st.createLabel(epAddr, "ENTRY", SourceType.IMPORTED);
+			// Decode the entry with the direct page the saved PSW selects (PSW.P, bit 5).
+			int psw = settings.provider().readByte(0x2A) & 0xff;
+			var ctx = program.getLanguage().getContextBaseRegister();
+			var rv = new ghidra.program.model.lang.RegisterValue(ctx).assign(
+				program.getLanguage().getRegister("ctx_P"),
+				java.math.BigInteger.valueOf((psw >> 5) & 1));
+			program.getProgramContext().setRegisterValue(epAddr, epAddr, rv);
 		} catch (AddressOverflowException e) {
 			e.printStackTrace();
 		} catch (AddressOutOfBoundsException e) {
 			e.printStackTrace();
 		} catch (InvalidInputException e) {
+			e.printStackTrace();
+		} catch (ghidra.program.model.listing.ContextChangeException e) {
 			e.printStackTrace();
 		}
 	}
@@ -111,7 +124,7 @@ public class SPCLoader extends AbstractLibrarySupportLoader {
 		int ep = -1;
 		try {
 			var pc = provider.getInputStream(0x25).readNBytes(2);
-			ep = (int)(pc[0] & 0xFF) + (int)(pc[1] << 8);
+			ep = (pc[0] & 0xFF) | (pc[1] & 0xFF) << 8;   // was sign-extended for PC >= $8000
 			list.add(new Option(OPT_EP_ADDRESS, String.format("%04X", ep)));
 		} catch (IOException e) {
 			list.add(new Option(OPT_EP_ADDRESS, ""));

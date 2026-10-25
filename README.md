@@ -6,6 +6,9 @@
 
 # SPCdra: SPC700 loader for Ghidra
 
+[![Sponsor Aleph Void](https://img.shields.io/badge/Sponsor-Aleph%20Void-EA4AAA?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/aleph-void)
+
+
 ~~**Very experimental! No compatibility guarantees.**~~ *(fork)* Verified: every opcode against
 MAME's SPC700 disassembler and the bass assembler, all 256,000 SingleStepTests/spc700 cases
 (255,995 pass; the 5 others are instructions whose bytes run past `$FFFF`, see GHIDRA-RARE.md)
